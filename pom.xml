@@ -9,6 +9,8 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+
+        <selenium.version>4.13.0</selenium.version>
     </properties>
 
     <dependencies>
@@ -16,19 +18,25 @@
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>3.141.59</version>
+            <version>${selenium.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-chrome-driver</artifactId>
+            <version>${selenium.version}</version>
         </dependency>
 
         <!-- Axe Selenium Java -->
         <dependency>
             <groupId>com.deque.html.axe-core</groupId>
             <artifactId>selenium</artifactId>
-            <version>4.6.0</version>
+            <version>4.10.1</version>
         </dependency>
+
         <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-chrome-driver</artifactId>
-            <version>3.141.59</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-nop</artifactId>
+            <version>1.7.30</version>
         </dependency>
     </dependencies>
 

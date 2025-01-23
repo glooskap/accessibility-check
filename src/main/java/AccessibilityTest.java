@@ -6,29 +6,27 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static java.util.Arrays.stream;
 
 public class AccessibilityTest {
     public static void main(String[] args) {
-        // Set up WebDriver
-        System.setProperty("webdriver.chrome.driver", "chromedriver-win64\\chromedriver.exe"); // to download the chrome driver and add it as a resource in the project
+        // to download the chrome driver and add it as a resource in the project
+        System.setProperty("webdriver.chrome.driver", "chromedriver-win64\\chromedriver.exe");
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless");
         WebDriver driver = new ChromeDriver(options);
+        //System.out.println("ChromeDriver name: " + ((RemoteWebDriver) driver).getCapabilities().getBrowserName());
+        //System.out.println("ChromeDriver version: " + ((RemoteWebDriver) driver).getCapabilities().getBrowserVersion());
 
         // HTML content as a string
         String htmlContent;
-/*        htmlContent =
+/*
+        htmlContent =
                 //" <html>   " +
                 "<table class=\"TblBottom\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"99%\"> \n" +
                 "     <tbody>\n" +
@@ -63,11 +61,11 @@ public class AccessibilityTest {
                 "     </tbody>\n" +
                 "    </table> "; // +
                 //" </html>";
-                */
+*/
 
         try {
             htmlContent = new String(
-                    Files.readAllBytes(Paths.get("src\\main\\resources\\preview.htm")));
+                    Files.readAllBytes(Paths.get("src\\main\\resources\\samples\\preview.htm")));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -90,11 +88,12 @@ public class AccessibilityTest {
         // Example rules
         //builder.withRules(new ArrayList<>(
         //        Arrays.asList("color-contrast", "image-alt")));
+        //builder.withOnlyRules(Arrays.asList("image-alt"));
         Results result = builder.analyze(driver);
 
         // Print the number of accessibility issues found
         System.out.println();
-        System.out.println("Accessibility issues found: " + result.getViolations().size());
+        System.out.println("Accessibility issues found: " + result.getViolations().stream().mapToLong(rule -> rule.getNodes().size()).sum());
         System.out.println("Accessibility issues passed: " + result.getPasses().size());
         System.out.println("Accessibility issues incomplete: " + result.getIncomplete().size());
         System.out.println("Accessibility issues inapplicable: " + result.getInapplicable().size());
@@ -122,9 +121,18 @@ public class AccessibilityTest {
         if (result.getViolations().size() > 0) {
             result.getViolations().stream()
                 .flatMap(rule -> rule.getNodes().stream())
-                .forEach(node -> System.out.println(node.getImpact() + " | " + node.getFailureSummary() + "\n" + node.getHtml()));
+                .forEach(node -> System.out.println(node.getImpact() + " | " + node.getFailureSummary() + "\n" + node.getHtml() +"\n" + node.getTarget()));
         } else {
             System.out.println("no violations");
+        }
+
+        System.out.println("\n\n");
+        System.out.println("--- Inapplicable ---");
+        if (result.getInapplicable().size() > 0) {
+            result.getInapplicable().stream()
+                    .forEach(rule -> System.out.println(rule.getId() + " | " + rule.getDescription()));
+        } else {
+            System.out.println("no inapplicable");
         }
 
         // Clean up
